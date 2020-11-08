@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.fluig</groupId>
 	<artifactId>widget-publica</artifactId>
@@ -8,7 +8,29 @@
 	<name>Widget Publica</name>
 	<description>Widget com integração OAuth</description>
 
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>fluig Nexus Repository</name>
+			<url>http://nexus.fluig.com/content/groups/public</url>
+		</repository>
+	</repositories>
 	<dependencies>
+	 	<dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>itextpdf</artifactId>
+		    <version>5.5.13.1</version>
+		</dependency>		
+		<dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>html2pdf</artifactId>
+		    <version>2.1.6</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.6</version>
+		</dependency>
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
@@ -38,7 +60,7 @@
 			<artifactId>signpost-core</artifactId>
 			<version>1.2.1.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -46,7 +68,7 @@
 			<version>1.1</version>
 		</dependency>
 
-		<!-- /others -->		
+		<!-- /others -->
 		<dependency>
 			<groupId>com.fluig</groupId>
 			<artifactId>foundation-security-authentication-saml</artifactId>
@@ -56,31 +78,53 @@
 		<dependency>
 			<groupId>com.fluig</groupId>
 			<artifactId>wcm-sdk-service</artifactId>
-			<version>1.5.13</version>
+			<version>1.6.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fluig</groupId>
 			<artifactId>wcm-common</artifactId>
-			<version>1.5.13</version>
+			<version>1.6.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fluig</groupId>
 			<artifactId>wcm-core</artifactId>
-			<version>1.5.13</version>
+			<version>1.6.5</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>com.fluig</groupId>
 			<artifactId>ecm-ejb-api</artifactId>
-			<version>1.5.13</version>
+			<version>1.6.5</version>
 			<type>jar</type>
 		</dependency>
 	</dependencies>
-	
-	<build>
+
+	<build>	
 		<plugins>
+			<plugin> 
+			
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>jaxws-maven-plugin</artifactId>
+			    <version>2.6</version>
+			    <executions> 
+			        <execution> 
+			            <id>wsimport-from-jdk</id>
+			            <goals>
+			                <goal>wsimport</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			    <configuration>
+			        <wsdlUrls>
+			            <wsdlUrl>http://petsocietytst.fluig.com/webdesk/ECMDocumentService?wsdl</wsdlUrl> 
+			        </wsdlUrls>
+			        <keep>true</keep> 
+			        <packageName>com.widgetpublica.wsdl.client.ECMDocumentService</packageName> 
+			        <sourceDestDir>src/main/java</sourceDestDir>
+			    </configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
