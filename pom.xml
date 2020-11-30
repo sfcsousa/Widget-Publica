@@ -103,7 +103,7 @@
 
 	<build>	
 		<plugins>
-			<plugin> 
+			<!-- plugin> 
 			
 			    <groupId>org.codehaus.mojo</groupId>
 			    <artifactId>jaxws-maven-plugin</artifactId>
@@ -124,7 +124,7 @@
 			        <packageName>com.widgetpublica.wsdl.client.ECMDocumentService</packageName> 
 			        <sourceDestDir>src/main/java</sourceDestDir>
 			    </configuration>
-			</plugin>
+			</plugin-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
