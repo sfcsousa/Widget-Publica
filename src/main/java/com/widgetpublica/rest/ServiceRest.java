@@ -48,7 +48,6 @@ import com.widgetpublica.util.ErrorStatus;
 import com.widgetpublica.util.MergeFiles;
 import com.widgetpublica.util.RestConstant;
 
-import br.com.twobe.pdfToWatermark.HtmlTemplate;
 
 @Path("/service")
 public class ServiceRest extends WCMRest {
@@ -89,7 +88,6 @@ public class ServiceRest extends WCMRest {
 
 		try {
 
-
 			JSONObject obj = (JSONObject) parser.parse(params);
 
 			String documentBase64 = (String) obj.get("documentBase64");
@@ -98,7 +96,8 @@ public class ServiceRest extends WCMRest {
 			String fileBasePath = "resources/fileBase.pdf";
 			File file = new File(fileBasePath);
 
-			try (FileOutputStream fos = new FileOutputStream(file);) {
+			try  {
+				FileOutputStream fos = new FileOutputStream(file);
 				byte[] decoder = Base64.getDecoder().decode(documentBase64);
 				fos.write(decoder);
 				System.out.println("PDF File Saved");
