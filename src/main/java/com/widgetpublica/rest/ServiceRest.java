@@ -48,6 +48,8 @@ import com.widgetpublica.util.ErrorStatus;
 import com.widgetpublica.util.MergeFiles;
 import com.widgetpublica.util.RestConstant;
 
+import br.com.twobe.pdfToWatermark.HtmlTemplate;
+
 @Path("/service")
 public class ServiceRest extends WCMRest {
 
@@ -63,7 +65,7 @@ public class ServiceRest extends WCMRest {
 
 		return Response.status(status).entity(response).type(MediaType.APPLICATION_JSON).build();
 	}
-	
+
 	@GET
 	@Path("/publicHello")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -78,122 +80,62 @@ public class ServiceRest extends WCMRest {
 	}
 
 	@POST
-	@Path("/dataset")
+	@Path("/appendPdfToHistory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response getLayouts(String params) {
-		String APP_KEY = "415998177261c83957d08b85b49a98a6";//"9876-5432-1987-6543";
+	public Response appendPdfToStory(String params) {
 
-		JSONParser parser = new JSONParser();	
+		JSONParser parser = new JSONParser();
 
 		try {
 
-			KeyVO key = Keyring.getKeys((long) 1, APP_KEY);
 
 			JSONObject obj = (JSONObject) parser.parse(params);
 
-			String datasetId = (String) obj.get("datasetId");
-			
-			OAuthConsumer config = config(key);
-			URL url = new URL(key.getDomainUrl() + "/api/public/ecm/dataset/datasets");
+			String documentBase64 = (String) obj.get("documentBase64");
+			String documentHistory = (String) obj.get("documentHistory");
 
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod(RestConstant.REQUEST_METHOD_POST);
-			conn.setRequestProperty("Accept-Charset", "UTF-8");
-			conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-			conn.setDoInput(true);
-			conn.setDoOutput(true);
-			config.sign(conn);
+			String fileBasePath = "resources/fileBase.pdf";
+			File file = new File(fileBasePath);
 
-			String json = "{" + "\"name\": \""+datasetId+"\"," + "\"fields\": null," + "\"constraints\": null }";
-
-			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-			wr.write(json);
-			wr.flush();
-			wr.close();
-
-			conn.connect();
-
-			Reader inputCreateUser = new BufferedReader(
-					new InputStreamReader(conn.getInputStream(), RestConstant.UTF_8_ENCODE));
-			String result = "";
-			for (int c = inputCreateUser.read(); c != -1; c = inputCreateUser.read()) {
-				result += (char) c;
+			try (FileOutputStream fos = new FileOutputStream(file);) {
+				byte[] decoder = Base64.getDecoder().decode(documentBase64);
+				fos.write(decoder);
+				System.out.println("PDF File Saved");
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
 			}
-			int code = conn.getResponseCode();
-			System.out.println(String.format("RESPONSE: %d - %s: data: %s", code, conn.getResponseMessage(), result));
 
-			conn.disconnect();
-			return Response.status(code).entity(result).build();
+			List<InputStream> inputPdfList = new ArrayList<InputStream>();
+
+			inputPdfList.add(new FileInputStream(fileBasePath));
+			
+			
+			String histHtmlPath = "resources/historico.pdf";
+			HtmlConverter.convertToPdf(documentHistory, new FileOutputStream(histHtmlPath));
+			inputPdfList.add(new FileInputStream(histHtmlPath));
+
+			// Prepare output stream for merged pdf file.
+			String docAssinadoPath = "resources/docAssinado.pdf";
+			OutputStream outputStream = new FileOutputStream(docAssinadoPath);
+
+			// call method to merge pdf files.
+			MergeFiles.mergePdfFiles(inputPdfList, outputStream);
+
+			Integer status = 200;
+
+			Map<String, String> response = new HashMap<String, String>();
+			
+			
+			byte[] fileContent = FileUtils.readFileToByteArray(new File(docAssinadoPath));
+			String encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+			response.put("docAssinado", encodedString);
+
+			return Response.status(status).entity(response).type(MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-		}
-	}
-
-	
-	@POST
-	@Path("/iniciarProcessoSeletivo")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response postIniciarProcessoSeletivo(String params) throws Exception {
-
-		JSONParser parser = new JSONParser();
-		JSONObject obj = (JSONObject) parser.parse(params);
-
-		String nome = (String) obj.get("nome");
-		String email = (String) obj.get("email");
-		String telefone = (String) obj.get("telefone");
-		String vaga = (String) obj.get("vaga");
-		String atividadeDestino = (String) obj.get("atividade");
-		String usuarioDestino = (String) obj.get("matricula");
-		String comentarios = "Iniciado via pagina publica";
-
-		int cod_empresa = 1;
-		Long empresa = new Long((long) cod_empresa);
-
-		String cod_processo = "vagas_internas";
-
-		KeyVO key = Keyring.getKeys(empresa, RestConstant.APP_KEY);
-
-		try {
-			OAuthConsumer config = config(key);
-
-			URL url = new URL(key.getDomainUrl() + "/process-management/api/v2/processes/" + cod_processo + "/start");
-
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod(RestConstant.REQUEST_METHOD_POST);
-			conn.setRequestProperty("Accept-Charset", "UTF-8");
-			conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-			conn.setDoInput(true);
-			conn.setDoOutput(true);
-			config.sign(conn);
-
-			String json = "{" + "\"targetState\": " + atividadeDestino + "," + "\"targetAssignee\": \"" + usuarioDestino
-					+ "\"," + "\"comment\": \"" + comentarios + "\"," + "\"formFields\": " + "{  " + "\"txt_nome\": \""
-					+ nome + "\",  " + "\"txt_email\": \"" + email + "\",  " + "\"txt_telefone\": \"" + telefone
-					+ "\",  " + "\"txt_vaga\": \"" + vaga + "\"" + "}" + "}";
-
-			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-			wr.write(json);
-			wr.flush();
-			wr.close();
-
-			conn.connect();
-
-			Reader inputCreateUser = new BufferedReader(
-					new InputStreamReader(conn.getInputStream(), RestConstant.UTF_8_ENCODE));
-			String result = "";
-			for (int c = inputCreateUser.read(); c != -1; c = inputCreateUser.read()) {
-				result += (char) c;
-			}
-			int code = conn.getResponseCode();
-			System.out.println(String.format("RESPONSE: %d - %s: data: %s", code, conn.getResponseMessage(), result));
-
-			conn.disconnect();
-			return Response.status(code).entity(result).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorStatus(e)).build();
 		}
 	}
 
