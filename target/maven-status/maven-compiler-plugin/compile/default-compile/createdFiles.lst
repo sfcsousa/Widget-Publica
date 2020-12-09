@@ -1,6 +1,5 @@
 com\widgetpublica\util\MergeFiles.class
 com\widgetpublica\rest\conf\ApplicationConfig.class
-com\widgetpublica\rest\client\ContentManagement.class
 com\widgetpublica\util\ErrorStatus.class
 com\widgetpublica\rest\ServiceRest.class
 com\widgetpublica\ActivationClass.class

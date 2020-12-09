@@ -1,17 +1,10 @@
 package com.widgetpublica.rest;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -22,31 +15,17 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthConsumer;
-
-import com.fluig.customappkey.Keyring;
-import com.fluig.sdk.api.FluigAPI;
-import com.fluig.sdk.api.common.SDKException;
-import com.fluig.sdk.api.customappkey.KeyVO;
-import com.fluig.sdk.api.document.DocumentVO;
-import com.fluig.sdk.service.DocumentService;
-import com.itextpdf.html2pdf.HtmlConverter;
-
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.totvs.technology.wcm.sdk.rest.WCMRest;
-import com.widgetpublica.util.ErrorStatus;
 import com.widgetpublica.util.MergeFiles;
-import com.widgetpublica.util.RestConstant;
 
 
 @Path("/service")
@@ -136,11 +115,5 @@ public class ServiceRest extends WCMRest {
 		} catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 		}
-	}
-
-	private OAuthConsumer config(KeyVO key) {
-		OAuthConsumer consumer = new DefaultOAuthConsumer(key.getConsumerKey(), key.getConsumerSecret());
-		consumer.setTokenWithSecret(key.getToken(), key.getTokenSecret());
-		return consumer;
 	}
 }

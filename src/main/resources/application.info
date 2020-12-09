@@ -9,6 +9,7 @@ developer.name=pedrosousa
 developer.url=
 application.uiwidget=true
 application.mobileapp=false
+application.extensible=true
 view.file=view.ftl
 edit.file=edit.ftl
 locale.file.base.name=widget_publica

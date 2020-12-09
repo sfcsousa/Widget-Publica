@@ -1,7 +1,5 @@
 package com.widgetpublica.util;
 
-import java.io.Serializable;
-
 public class ErrorStatus {
 	 private static final Long serialVersionUID = 1L;
 

@@ -1,12 +1,9 @@
 package com.widgetpublica;
 
 import javax.ejb.Singleton;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 
 import com.fluig.sdk.api.component.activation.ActivationEvent;
 import com.fluig.sdk.api.component.activation.ActivationListener;
-import com.fluig.customappkey.Keyring;
 
 @Singleton(mappedName = "activator/widget_publica", name = "activator/widget_publica")
 public class ActivationClass implements ActivationListener {
@@ -41,7 +38,7 @@ public class ActivationClass implements ActivationListener {
 	 * @throws Exception
 	 */
 	public void enable(ActivationEvent event) throws Exception {
-		 Keyring.provision(APP_KEY);
+		// Keyring.provision(APP_KEY);
 	}
 
 	/**

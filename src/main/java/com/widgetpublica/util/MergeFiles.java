@@ -7,12 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.itextpdf.text.Document;
-import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfCopy;
-import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSmartCopy;
-import com.itextpdf.text.pdf.PdfWriter;
 
 public class MergeFiles {
 
